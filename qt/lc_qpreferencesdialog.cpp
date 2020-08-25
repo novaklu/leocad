@@ -28,6 +28,8 @@ lcQPreferencesDialog::lcQPreferencesDialog(QWidget* Parent, lcPreferencesDialogO
 	delete ui->povrayLayout;
 #endif
 
+	connect(ui->AxesColorButton, SIGNAL(clicked()), this, SLOT(ColorButtonClicked()));
+	connect(ui->OverlayColorButton, SIGNAL(clicked()), this, SLOT(ColorButtonClicked()));
 	connect(ui->FadeStepsColor, SIGNAL(clicked()), this, SLOT(ColorButtonClicked()));
 	connect(ui->HighlightNewPartsColor, SIGNAL(clicked()), this, SLOT(ColorButtonClicked()));
 	connect(ui->gridStudColor, SIGNAL(clicked()), this, SLOT(ColorButtonClicked()));
@@ -47,6 +49,9 @@ lcQPreferencesDialog::lcQPreferencesDialog(QWidget* Parent, lcPreferencesDialogO
 	ui->lgeoPath->setText(mOptions->LGEOPath);
 	ui->authorName->setText(mOptions->DefaultAuthor);
 	ui->mouseSensitivity->setValue(mOptions->Preferences.mMouseSensitivity);
+	const bool ColorThemeBlocked = ui->ColorTheme->blockSignals(true);
+	ui->ColorTheme->setCurrentIndex(static_cast<int>(mOptions->Preferences.mColorTheme));
+	ui->ColorTheme->blockSignals(ColorThemeBlocked);
 	for (unsigned int LanguageIdx = 0; LanguageIdx < LC_ARRAY_COUNT(gLanguageLocales); LanguageIdx++)
 	{
 		if (mOptions->Language == gLanguageLocales[LanguageIdx])
@@ -84,12 +89,16 @@ lcQPreferencesDialog::lcQPreferencesDialog(QWidget* Parent, lcPreferencesDialogO
 	ui->LineWidthSlider->setValue((mOptions->Preferences.mLineWidth - mLineWidthRange[0]) / mLineWidthGranularity);
 
 	ui->MeshLOD->setChecked(mOptions->Preferences.mAllowLOD);
+
+	ui->MeshLODSlider->setRange(0, 1500.0f / mMeshLODMultiplier);
+	ui->MeshLODSlider->setValue(mOptions->Preferences.mMeshLODDistance / mMeshLODMultiplier);
+
 	ui->FadeSteps->setChecked(mOptions->Preferences.mFadeSteps);
 	ui->HighlightNewParts->setChecked(mOptions->Preferences.mHighlightNewParts);
 	ui->gridStuds->setChecked(mOptions->Preferences.mDrawGridStuds);
 	ui->gridLines->setChecked(mOptions->Preferences.mDrawGridLines);
 	ui->gridLineSpacing->setText(QString::number(mOptions->Preferences.mGridLineSpacing));
-	ui->axisIcon->setChecked(mOptions->Preferences.mDrawAxes);
+	ui->AxisIconCheckBox->setChecked(mOptions->Preferences.mDrawAxes);
 
 	ui->ViewSphereLocationCombo->setCurrentIndex((int)mOptions->Preferences.mViewSphereLocation);
 
@@ -126,6 +135,15 @@ lcQPreferencesDialog::lcQPreferencesDialog(QWidget* Parent, lcPreferencesDialogO
 
 	QPixmap pix(12, 12);
 
+	pix.fill(QColor(LC_RGBA_RED(mOptions->Preferences.mAxesColor), LC_RGBA_GREEN(mOptions->Preferences.mAxesColor), LC_RGBA_BLUE(mOptions->Preferences.mAxesColor)));
+	ui->AxesColorButton->setIcon(pix);
+
+	pix.fill(QColor(LC_RGBA_RED(mOptions->Preferences.mOverlayColor), LC_RGBA_GREEN(mOptions->Preferences.mOverlayColor), LC_RGBA_BLUE(mOptions->Preferences.mOverlayColor)));
+	ui->OverlayColorButton->setIcon(pix);
+
+	pix.fill(QColor(LC_RGBA_RED(mOptions->Preferences.mActiveViewColor), LC_RGBA_GREEN(mOptions->Preferences.mActiveViewColor), LC_RGBA_BLUE(mOptions->Preferences.mActiveViewColor)));
+	ui->ActiveViewColorButton->setIcon(pix);
+	
 	pix.fill(QColor(LC_RGBA_RED(mOptions->Preferences.mFadeStepsColor), LC_RGBA_GREEN(mOptions->Preferences.mFadeStepsColor), LC_RGBA_BLUE(mOptions->Preferences.mFadeStepsColor)));
 	ui->FadeStepsColor->setIcon(pix);
 
@@ -151,6 +169,7 @@ lcQPreferencesDialog::lcQPreferencesDialog(QWidget* Parent, lcPreferencesDialogO
 	on_antiAliasing_toggled();
 	on_edgeLines_toggled();
 	on_LineWidthSlider_valueChanged();
+	on_MeshLODSlider_valueChanged();
 	on_FadeSteps_toggled();
 	on_HighlightNewParts_toggled();
 	on_gridStuds_toggled();
@@ -198,6 +217,7 @@ void lcQPreferencesDialog::accept()
 	mOptions->LGEOPath = ui->lgeoPath->text();
 	mOptions->DefaultAuthor = ui->authorName->text();
 	mOptions->Preferences.mMouseSensitivity = ui->mouseSensitivity->value();
+	mOptions->Preferences.mColorTheme = static_cast<lcColorTheme>(ui->ColorTheme->currentIndex());
 
 	int Language = ui->Language->currentIndex();
     if (Language < 0 || Language > static_cast<int>(LC_ARRAY_COUNT(gLanguageLocales)))
@@ -221,6 +241,7 @@ void lcQPreferencesDialog::accept()
 	mOptions->Preferences.mDrawEdgeLines = ui->edgeLines->isChecked();
 	mOptions->Preferences.mLineWidth = mLineWidthRange[0] + static_cast<float>(ui->LineWidthSlider->value()) * mLineWidthGranularity;
 	mOptions->Preferences.mAllowLOD = ui->MeshLOD->isChecked();
+	mOptions->Preferences.mMeshLODDistance = ui->MeshLODSlider->value() * mMeshLODMultiplier;
 	mOptions->Preferences.mFadeSteps = ui->FadeSteps->isChecked();
 	mOptions->Preferences.mHighlightNewParts = ui->HighlightNewParts->isChecked();
 
@@ -228,7 +249,7 @@ void lcQPreferencesDialog::accept()
 	mOptions->Preferences.mDrawGridLines = ui->gridLines->isChecked();
 	mOptions->Preferences.mGridLineSpacing = gridLineSpacing;
 
-	mOptions->Preferences.mDrawAxes = ui->axisIcon->isChecked();
+	mOptions->Preferences.mDrawAxes = ui->AxisIconCheckBox->isChecked();
 	mOptions->Preferences.mViewSphereLocation = (lcViewSphereLocation)ui->ViewSphereLocationCombo->currentIndex();
 
 	switch (ui->ViewSphereSizeCombo->currentIndex())
@@ -311,6 +332,14 @@ void lcQPreferencesDialog::on_lgeoPathBrowse_clicked()
 		ui->lgeoPath->setText(QDir::toNativeSeparators(result));
 }
 
+void lcQPreferencesDialog::on_ColorTheme_currentIndexChanged(int Index)
+{
+	Q_UNUSED(Index);
+
+	if (QMessageBox::question(this, tr("Reset Colors"), tr("Would you like to also reset the interface colors to match the color theme?")) == QMessageBox::Yes)
+		mOptions->Preferences.SetInterfaceColors(static_cast<lcColorTheme>(ui->ColorTheme->currentIndex()));
+}
+
 void lcQPreferencesDialog::ColorButtonClicked()
 {
 	QObject* Button = sender();
@@ -318,7 +347,25 @@ void lcQPreferencesDialog::ColorButtonClicked()
 	quint32* Color = nullptr;
 	QColorDialog::ColorDialogOptions DialogOptions;
 
-	if (Button == ui->FadeStepsColor)
+	if (Button == ui->AxesColorButton)
+	{
+		Color = &mOptions->Preferences.mAxesColor;
+		Title = tr("Select Axes Color");
+		DialogOptions = 0;
+	}
+	else if (Button == ui->OverlayColorButton)
+	{
+		Color = &mOptions->Preferences.mOverlayColor;
+		Title = tr("Select Overlay Color");
+		DialogOptions = 0;
+	}
+	else if (Button == ui->ActiveViewColorButton)
+	{
+		Color = &mOptions->Preferences.mActiveViewColor;
+		Title = tr("Select Active View Color");
+		DialogOptions = 0;
+	}
+	else if (Button == ui->FadeStepsColor)
 	{
 		Color = &mOptions->Preferences.mFadeStepsColor;
 		Title = tr("Select Fade Color");
@@ -397,6 +444,12 @@ void lcQPreferencesDialog::on_LineWidthSlider_valueChanged()
 {
 	float Value = mLineWidthRange[0] + static_cast<float>(ui->LineWidthSlider->value()) * mLineWidthGranularity;
 	ui->LineWidthLabel->setText(QString::number(Value));
+}
+
+void lcQPreferencesDialog::on_MeshLODSlider_valueChanged()
+{
+	float Value = ui->MeshLODSlider->value() * mMeshLODMultiplier;
+	ui->MeshLODLabel->setText(QString::number(static_cast<int>(Value)));
 }
 
 void lcQPreferencesDialog::on_FadeSteps_toggled()
@@ -999,6 +1052,38 @@ void lcQPreferencesDialog::on_mouseRemove_clicked()
 
 	UpdateMouseTreeItem(ItemIndex);
 	MouseTreeItemChanged(Current);
+}
+
+void lcQPreferencesDialog::on_MouseImportButton_clicked()
+{
+	QString FileName = QFileDialog::getOpenFileName(this, tr("Import Shortcuts"), "", tr("Text Files (*.txt);;All Files (*.*)"));
+
+	if (FileName.isEmpty())
+		return;
+
+	lcMouseShortcuts Shortcuts;
+	if (!Shortcuts.Load(FileName))
+	{
+		QMessageBox::warning(this, "LeoCAD", tr("Error loading mouse shortcuts file."));
+		return;
+	}
+
+	mOptions->MouseShortcuts = Shortcuts;
+	UpdateMouseTree();
+
+	mOptions->MouseShortcutsModified = true;
+	mOptions->MouseShortcutsDefault = false;
+}
+
+void lcQPreferencesDialog::on_MouseExportButton_clicked()
+{
+	QString FileName = QFileDialog::getSaveFileName(this, tr("Export Shortcuts"), "", tr("Text Files (*.txt);;All Files (*.*)"));
+
+	if (FileName.isEmpty())
+		return;
+
+	if (!mOptions->MouseShortcuts.Save(FileName))
+		QMessageBox::warning(this, "LeoCAD", tr("Error saving mouse shortcuts file."));
 }
 
 void lcQPreferencesDialog::on_mouseReset_clicked()

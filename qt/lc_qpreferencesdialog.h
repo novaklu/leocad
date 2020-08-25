@@ -32,10 +32,12 @@ public slots:
 	void on_MinifigSettingsBrowseButton_clicked();
 	void on_povrayExecutableBrowse_clicked();
 	void on_lgeoPathBrowse_clicked();
+	void on_ColorTheme_currentIndexChanged(int Index);
 	void ColorButtonClicked();
 	void on_antiAliasing_toggled();
 	void on_edgeLines_toggled();
 	void on_LineWidthSlider_valueChanged();
+	void on_MeshLODSlider_valueChanged();
 	void on_FadeSteps_toggled();
 	void on_HighlightNewParts_toggled();
 	void on_gridStuds_toggled();
@@ -57,6 +59,8 @@ public slots:
 	void on_KeyboardFilterEdit_textEdited(const QString& Text);
 	void on_mouseAssign_clicked();
 	void on_mouseRemove_clicked();
+	void on_MouseImportButton_clicked();
+	void on_MouseExportButton_clicked();
 	void on_mouseReset_clicked();
 	void on_studLogo_toggled();
 	void MouseTreeItemChanged(QTreeWidgetItem* Current);
@@ -72,4 +76,5 @@ private:
 
 	float mLineWidthRange[2];
 	float mLineWidthGranularity;
+	static constexpr float mMeshLODMultiplier = 25.0f;
 };

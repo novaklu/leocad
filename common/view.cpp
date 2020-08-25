@@ -813,6 +813,7 @@ void View::OnDraw()
 	const bool DrawInterface = mWidget != nullptr;
 
 	mScene.SetAllowLOD(Preferences.mAllowLOD && mWidget != nullptr);
+	mScene.SetLODDistance(Preferences.mMeshLODDistance);
 
 	mScene.Begin(mCamera->mWorldView);
 
@@ -940,7 +941,7 @@ void View::OnDraw()
 			DrawSelectMoveOverlay();
 		else if ((Tool == LC_TOOL_ROTATE || (Tool == LC_TOOL_SELECT && mTrackButton != lcTrackButton::None && mTrackTool >= LC_TRACKTOOL_ROTATE_X && mTrackTool <= LC_TRACKTOOL_ROTATE_XYZ)) && ActiveModel->AnyPiecesSelected())
 			DrawRotateOverlay();
-		else if ((mTrackTool == LC_TRACKTOOL_SELECT || mTrackTool == LC_TRACKTOOL_ZOOM_REGION) && mTrackButton == lcTrackButton::Left)
+		else if ((mTrackTool == LC_TRACKTOOL_SELECT || mTrackTool == LC_TRACKTOOL_ZOOM_REGION) && mTrackButton != lcTrackButton::None)
 			DrawSelectZoomRegionOverlay();
 		else if (Tool == LC_TOOL_ROTATE_VIEW && mTrackButton == lcTrackButton::None)
 			DrawRotateViewOverlay();
@@ -1532,7 +1533,7 @@ void View::DrawRotateViewOverlay()
 	mContext->SetProjectionMatrix(lcMatrix44Ortho(0, w, 0, h, -1, 1));
 
 	glDisable(GL_DEPTH_TEST);
-	mContext->SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+	mContext->SetColor(lcVector4FromColor(lcGetPreferences().mOverlayColor));
 
 	float Verts[32 * 16 * 2];
 	float* CurVert = Verts;
@@ -1824,7 +1825,7 @@ void View::DrawAxes()
 	mContext->SetVertexBufferPointer(TextBuffer);
 	mContext->SetVertexFormat(0, 3, 0, 2, 0, false);
 
-	mContext->SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+	mContext->SetColor(lcVector4FromColor(lcGetPreferences().mAxesColor));
 	mContext->DrawPrimitives(GL_TRIANGLES, 0, 6 * 3);
 
 	glDisable(GL_BLEND);
@@ -1842,7 +1843,7 @@ void View::DrawViewport()
 	if (gMainWindow->GetActiveView() == this)
 	{
 		mContext->SetMaterial(lcMaterialType::UnlitColor);
-		mContext->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+		mContext->SetColor(lcVector4FromColor(lcGetPreferences().mActiveViewColor));
 		float Verts[8] = { 0.0f, 0.0f, mWidth - 1.0f, 0.0f, mWidth - 1.0f, mHeight - 1.0f, 0.0f, mHeight - 1.0f };
 
 		mContext->SetVertexBufferPointer(Verts);
