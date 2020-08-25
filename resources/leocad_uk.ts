@@ -4952,72 +4952,72 @@ GL_EXT_texture_filter_anisotropic extension: %5
         <translation type="unfinished">Експортувати...</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="169"/>
         <location filename="../qt/lc_qminifigdialog.cpp" line="176"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="183"/>
         <source>Save Template</source>
         <translation>Зберегти шаблон</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="169"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="176"/>
         <source>Template Name:</source>
         <translation>Назва шаблона:</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="176"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="183"/>
         <source>Template name cannot be empty.</source>
         <translation>Шаблон не може бути порожнім.</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="182"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="189"/>
         <source>Are you sure you want to overwrite the template &apos;%1&apos;?</source>
         <translation>Ви впевнені що хочете перезаписати шаблон &apos;%1&apos;?</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="183"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="190"/>
         <source>Overwrite Template</source>
         <translation>Перезаписати шаблон</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="209"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="216"/>
         <source>Are you sure you want to delete the template &apos;%1&apos;?</source>
         <translation>Ви впевнені що хочете видалити шаблон &apos;%1&apos;?</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="211"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="218"/>
         <source>Delete Template</source>
         <translation>Видалити шаблон</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="221"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="228"/>
         <source>Import Templates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="221"/>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="242"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="228"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="249"/>
         <source>Minifig Template Files (*.minifig);;All Files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="230"/>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="251"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="237"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="258"/>
         <source>Error</source>
         <translation type="unfinished">Помилка</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="230"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="237"/>
         <source>Error reading file &apos;%1&apos;:
 %2</source>
         <translation type="unfinished">Помилка читання файла &apos;%1&apos;:
 %2</translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="242"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="249"/>
         <source>Export Templates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qt/lc_qminifigdialog.cpp" line="251"/>
+        <location filename="../qt/lc_qminifigdialog.cpp" line="258"/>
         <source>Error writing to file &apos;%1&apos;:
 %2</source>
         <translation type="unfinished">Помилка запису у файл &apos;%1&apos;:
